@@ -1,0 +1,194 @@
+name: microservice-ecommerce
+
+services:
+    proxy:
+        image: huyfst/proxy
+        container_name: proxy
+        depends_on:
+            - auth
+            - order
+            - payment
+            - cart
+            - product
+        networks:
+            - microservice
+        ports:
+            - target: 3000
+              protocol: tcp
+              published: 3000
+
+    auth:
+        image: huyfst/auth
+        container_name: auth
+        networks:
+            - microservice
+        depends_on: 
+            auth-db:
+                condition: service_healthy
+        environment:
+            DSN: host=auth-db user=huyfst password=1234 dbname=auth port=5432 sslmode=disable TimeZone=Asia/Ho_Chi_Minh
+            PROXY_SERVER: http://proxy:3000
+
+    auth-db:
+        image: postgres
+        container_name: auth-db
+        restart: always
+        networks:
+            - microservice
+        volumes:
+            - type: volume
+              source: auth-db-data
+              target: /data
+        environment:
+            POSTGRES_PASSWORD_FILE: /run/secrets/db_pass
+            POSTGRES_USER: huyfst
+            POSTGRES_DB: auth
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "huyfst", "-d", "auth"]
+            interval: 5s
+            timeout: 3s
+            retries: 5
+        secrets:
+            - db_pass
+            
+    cart:
+        image: huyfst/cart
+        container_name: cart
+        networks:
+            - microservice
+
+    cart-db:
+        image: postgres
+        container_name: cart-db
+        restart: always
+        networks:
+            - microservice
+        volumes:
+            - type: volume
+              source: cart-db-data
+              target: /data
+        environment:
+            POSTGRES_PASSWORD_FILE: /run/secrets/db_pass
+            POSTGRES_USER: huyfst
+            POSTGRES_DB: cart
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "huyfst", "-d", "cart"]
+            interval: 5s
+            timeout: 3s
+            retries: 5
+        secrets:
+            - db_pass
+
+    cart-redis:
+        image: redis
+        container_name: cart-redis
+        networks:
+            - microservice
+
+    order:
+        image: huyfst/order
+        container_name: order
+        networks:
+            - microservice
+        environment:
+            PORT: 3004
+
+    order-db:
+        image: postgres
+        container_name: order-db
+        restart: always
+        networks:
+            - microservice
+        volumes:
+            - type: volume
+              source: order-db-data
+              target: /data
+        environment:
+            POSTGRES_PASSWORD_FILE: /run/secrets/db_pass
+            POSTGRES_USER: huyfst
+            POSTGRES_DB: order
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "huyfst", "-d", "order"]
+            interval: 5s
+            timeout: 3s
+            retries: 5
+        secrets:
+            - db_pass
+
+    payment:
+        image: huyfst/payment
+        container_name: payment
+        networks:
+            - microservice
+
+    payment-db:
+        image: postgres
+        container_name: payment-db
+        restart: always
+        networks:
+            - microservice
+        volumes:
+            - type: volume
+              source: payment-db-data
+              target: /data
+        environment:
+            POSTGRES_PASSWORD_FILE: /run/secrets/db_pass
+            POSTGRES_USER: huyfst
+            POSTGRES_DB: payment
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "huyfst", "-d", "payment"]
+            interval: 5s
+            timeout: 3s
+            retries: 5
+        secrets:
+            - db_pass
+
+    product:
+        image: huyfst/product
+        container_name: product
+        networks:
+            - microservice
+        environment:
+            PORT: 3005
+
+    product-db:
+        image: postgres
+        container_name: product-db
+        restart: always
+        networks:
+            - microservice
+        volumes:
+            - type: volume
+              source: product-db-data
+              target: /data
+        environment:
+            POSTGRES_PASSWORD_FILE: /run/secrets/db_pass
+            POSTGRES_USER: huyfst
+            POSTGRES_DB: product
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "huyfst", "-d", "product"]
+            interval: 5s
+            timeout: 3s
+            retries: 5
+        secrets:
+            - db_pass
+
+networks:
+    microservice:
+        driver: bridge
+
+volumes:
+    auth-db-data:
+        driver: local
+    cart-db-data:
+        driver: local
+    order-db-data:
+        driver: local
+    payment-db-data:
+        driver: local
+    product-db-data:
+        driver: local
+
+secrets:
+    db_pass:
+        file: ./dbpass.txt
