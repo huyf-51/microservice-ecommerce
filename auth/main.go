@@ -14,8 +14,7 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.Use(gin.ErrorLogger())
-	// router.Use(cors.New(cors.Config{AllowOrigins: []string{os.Getenv("PROXY_SERVER")}}))
-	_, err := configs.ConnectDB()
+	err := configs.ConnectDB()
 	if err != nil {
 		fmt.Println("connect db error")
 	}

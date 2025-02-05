@@ -16,10 +16,13 @@ services:
             - target: 3000
               protocol: tcp
               published: 3000
-
+        
     auth:
         image: huyfst/auth
         container_name: auth
+        # deploy: 
+        #     mode: replicated
+        #     replicas: 3
         networks:
             - microservice
         depends_on: 
@@ -27,7 +30,6 @@ services:
                 condition: service_healthy
         environment:
             DSN: host=auth-db user=huyfst password=1234 dbname=auth port=5432 sslmode=disable TimeZone=Asia/Ho_Chi_Minh
-            PROXY_SERVER: http://proxy:3000
 
     auth-db:
         image: postgres
@@ -54,8 +56,16 @@ services:
     cart:
         image: huyfst/cart
         container_name: cart
+        # deploy: 
+        #     mode: replicated
+        #     replicas: 3
+        depends_on: 
+            cart-db:
+                condition: service_healthy
         networks:
             - microservice
+        environment:
+            DSN: host=cart-db user=huyfst password=1234 dbname=cart port=5432 sslmode=disable TimeZone=Asia/Ho_Chi_Minh
 
     cart-db:
         image: postgres
@@ -88,10 +98,20 @@ services:
     order:
         image: huyfst/order
         container_name: order
+        # deploy: 
+        #     mode: replicated
+        #     replicas: 3
+        depends_on: 
+            order-db:
+                condition: service_healthy
         networks:
             - microservice
         environment:
             PORT: 3004
+            DB_NAME: order
+            DB_USER: huyfst
+            DB_PASS: 1234
+            DB_HOST: order-db
 
     order-db:
         image: postgres
@@ -118,8 +138,16 @@ services:
     payment:
         image: huyfst/payment
         container_name: payment
+        # deploy: 
+        #     mode: replicated
+        #     replicas: 3
+        depends_on: 
+            payment-db:
+                condition: service_healthy
         networks:
             - microservice
+        environment:
+            DSN: host=payment-db user=huyfst password=1234 dbname=payment port=5432 sslmode=disable TimeZone=Asia/Ho_Chi_Minh
 
     payment-db:
         image: postgres
@@ -146,10 +174,20 @@ services:
     product:
         image: huyfst/product
         container_name: product
+        # deploy: 
+        #     mode: replicated
+        #     replicas: 3
+        depends_on: 
+            product-db:
+                condition: service_healthy
         networks:
             - microservice
         environment:
             PORT: 3005
+            DB_NAME: product
+            DB_USER: huyfst
+            DB_PASS: 1234
+            DB_HOST: product-db
 
     product-db:
         image: postgres
