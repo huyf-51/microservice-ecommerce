@@ -8,6 +8,7 @@ const port = process.env.PORT || 3005;
 configs.connectDB()
 
 app.get('/product', (req, res) => {
+    console.log('hello iam product service');
     res.json('hello huy')
 })
  

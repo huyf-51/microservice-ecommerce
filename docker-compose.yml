@@ -19,10 +19,9 @@ services:
         
     auth:
         image: huyfst/auth
-        container_name: auth
-        # deploy: 
-        #     mode: replicated
-        #     replicas: 3
+        deploy: 
+            mode: replicated
+            replicas: 3
         networks:
             - microservice
         depends_on: 
@@ -55,17 +54,19 @@ services:
             
     cart:
         image: huyfst/cart
-        container_name: cart
-        # deploy: 
-        #     mode: replicated
-        #     replicas: 3
+        deploy: 
+            mode: replicated
+            replicas: 3
         depends_on: 
             cart-db:
+                condition: service_healthy
+            cart-redis:
                 condition: service_healthy
         networks:
             - microservice
         environment:
             DSN: host=cart-db user=huyfst password=1234 dbname=cart port=5432 sslmode=disable TimeZone=Asia/Ho_Chi_Minh
+            REDIS_ADDR: cart-redis:6379
 
     cart-db:
         image: postgres
@@ -94,13 +95,17 @@ services:
         container_name: cart-redis
         networks:
             - microservice
+        healthcheck:
+            test: ["CMD", "redis-cli", "PING"]
+            interval: 5s
+            timeout: 3s
+            retries: 5
 
     order:
         image: huyfst/order
-        container_name: order
-        # deploy: 
-        #     mode: replicated
-        #     replicas: 3
+        deploy: 
+            mode: replicated
+            replicas: 3
         depends_on: 
             order-db:
                 condition: service_healthy
@@ -137,10 +142,9 @@ services:
 
     payment:
         image: huyfst/payment
-        container_name: payment
-        # deploy: 
-        #     mode: replicated
-        #     replicas: 3
+        deploy: 
+            mode: replicated
+            replicas: 3
         depends_on: 
             payment-db:
                 condition: service_healthy
@@ -173,10 +177,9 @@ services:
 
     product:
         image: huyfst/product
-        container_name: product
-        # deploy: 
-        #     mode: replicated
-        #     replicas: 3
+        deploy: 
+            mode: replicated
+            replicas: 3
         depends_on: 
             product-db:
                 condition: service_healthy
