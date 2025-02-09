@@ -1,16 +1,27 @@
 const { DataTypes, Model } = require('sequelize');
 const { sequelize } = require('../configs/db')
-class User extends Model {}
 
-User.init(
+class Order extends Model {}
+
+Order.init(
   {
-    // Model attributes are defined here
-    orderId: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
     },
-    
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    cartId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    totalPrice: {
+      type: DataTypes.BIGINT,
+      allowNull: false
+    }
   },
   {
     // Other model options go here
@@ -18,3 +29,4 @@ User.init(
     modelName: 'Order', // We need to choose the model name
   },
 );
+

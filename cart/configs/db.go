@@ -7,8 +7,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func ConnectDB() (db *gorm.DB, err error) {
+var DB *gorm.DB
+
+func ConnectDB() (err error) {
 	dsn := os.Getenv("DSN")
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	return
 }

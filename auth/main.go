@@ -2,7 +2,7 @@ package main
 
 import (
 	"auth/configs"
-	"auth/handlers"
+	"auth/routes"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -18,6 +18,6 @@ func main() {
 	if err != nil {
 		fmt.Println("connect db error")
 	}
-	handlers.Api(router)
+	routes.Api(router)
 	router.Run(":3001")
 }
