@@ -3,3 +3,9 @@ node_modules
 dbpass.txt
 
 key/
+
+auth-dsn.txt
+
+cart-dsn.txt
+
+payment-dsn.txt
