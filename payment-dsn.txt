@@ -1,0 +1,1 @@
+host=payment-db user=huyfst password=1234 dbname=payment port=5432 sslmode=disable TimeZone=Asia/Ho_Chi_Minh

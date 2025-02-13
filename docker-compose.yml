@@ -28,7 +28,9 @@ services:
             auth-db:
                 condition: service_healthy
         environment:
-            DSN: host=auth-db user=huyfst password=1234 dbname=auth port=5432 sslmode=disable TimeZone=Asia/Ho_Chi_Minh
+            DSN_FILE: /run/secrets/auth_dsn
+        secrets:
+            - auth_dsn
 
     auth-db:
         image: postgres
@@ -65,8 +67,10 @@ services:
         networks:
             - microservice
         environment:
-            DSN: host=cart-db user=huyfst password=1234 dbname=cart port=5432 sslmode=disable TimeZone=Asia/Ho_Chi_Minh
+            DSN_FILE: /run/secrets/cart_dsn
             REDIS_ADDR: cart-redis:6379
+        secrets:
+            - cart_dsn
 
     cart-db:
         image: postgres
@@ -115,8 +119,10 @@ services:
             PORT: 3004
             DB_NAME: order
             DB_USER: huyfst
-            DB_PASS: 1234
+            DB_PASS_FILE: /run/secrets/order_db_pass
             DB_HOST: order-db
+        secrets:
+            - order_db_pass
 
     order-db:
         image: postgres
@@ -151,7 +157,9 @@ services:
         networks:
             - microservice
         environment:
-            DSN: host=payment-db user=huyfst password=1234 dbname=payment port=5432 sslmode=disable TimeZone=Asia/Ho_Chi_Minh
+            DSN_FILE: /run/secrets/payment_dsn
+        secrets:
+            - payment_dsn
 
     payment-db:
         image: postgres
@@ -189,8 +197,10 @@ services:
             PORT: 3005
             DB_NAME: product
             DB_USER: huyfst
-            DB_PASS: 1234
+            DB_PASS_FILE: /run/secrets/product_db_pass
             DB_HOST: product-db
+        secrets: 
+            - product_db_pass
 
     product-db:
         image: postgres
@@ -233,3 +243,14 @@ volumes:
 secrets:
     db_pass:
         file: ./dbpass.txt
+    order_db_pass:
+        file: ./dbpass.txt
+    product_db_pass:
+        file: ./dbpass.txt
+    auth_dsn:
+        file: ./auth-dsn.txt
+    cart_dsn:
+        file: ./cart-dsn.txt
+    payment_dsn:
+        file: ./payment-dsn.txt
+    

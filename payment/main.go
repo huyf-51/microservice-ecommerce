@@ -13,7 +13,7 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.Use(gin.ErrorLogger())
-	_, err := configs.ConnectDB()
+	err := configs.ConnectDB()
 	if err != nil {
 		fmt.Println("connect db error")
 	}
