@@ -6,6 +6,7 @@ import (
 	"auth/types"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
@@ -54,7 +55,7 @@ func Login(c *gin.Context) {
 	}
 	pkpem, _ := os.ReadFile("./key/private-key.pem")
 	pk, _ := jwt.ParseECPrivateKeyFromPEM(pkpem)
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.StandardClaims{ExpiresAt: 15})
+	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.StandardClaims{ExpiresAt: time.Now().Unix() + 15000})
 	accessToken, _ := token.SignedString(pk)
 
 	c.JSON(200, gin.H{

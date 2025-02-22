@@ -9,3 +9,5 @@ auth-dsn.txt
 cart-dsn.txt
 
 payment-dsn.txt
+
+pub-key.pem
