@@ -6,11 +6,12 @@ pipeline{
                 DOCKER_PASS = credentials("docker_token")
             }
             steps {
-                bat 'cd api-gateway'
-                bat 'docker build -t huyfst/proxy .'
-                bat 'docker login -u huyfst -p %DOCKER_PASS%'
-                bat 'docker push huyfst/proxy'
-                bat 'trivy image huyfst/proxy'
+                dir('api-gateway') {
+                    bat 'docker build -t huyfst/proxy .'
+                    bat 'docker login -u huyfst -p %DOCKER_PASS%'
+                    bat 'docker push huyfst/proxy'
+                    bat 'trivy image huyfst/proxy'
+                }
             }
         }
     }
