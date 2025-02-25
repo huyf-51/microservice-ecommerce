@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"payment/configs"
+	"payment/grpc"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -17,5 +18,6 @@ func main() {
 	if err != nil {
 		fmt.Println("connect db error")
 	}
+	grpc.ConnectGrpcServer()
 	router.Run(":3003")
 }

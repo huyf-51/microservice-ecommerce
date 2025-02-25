@@ -16,6 +16,10 @@ services:
             - target: 3000
               protocol: tcp
               published: 3000
+        environment: 
+            PUB_KEY_FILE: /run/secrets/pub_key
+        secrets:
+            - pub_key
         
     auth:
         image: huyfst/auth
@@ -121,6 +125,7 @@ services:
             DB_USER: huyfst
             DB_PASS_FILE: /run/secrets/order_db_pass
             DB_HOST: order-db
+            GRPC_SERVER: payment:50051
         secrets:
             - order_db_pass
 
@@ -253,4 +258,6 @@ secrets:
         file: ./cart-dsn.txt
     payment_dsn:
         file: ./payment-dsn.txt
+    pub_key:
+        file: ./api-gateway/pub-key.pem
     

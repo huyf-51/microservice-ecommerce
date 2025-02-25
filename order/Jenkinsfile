@@ -1,10 +1,11 @@
-pipeline{
+pipeline {
     agent any
 
     stages {
-        stage("Test") {
+        stage('Test') {
             steps {
-                bat "go test"
+                bat 'npm install jest'
+                bat 'npm run test'
             }
         }
         stage('Sonar scan') {
@@ -13,21 +14,21 @@ pipeline{
             }
             steps {
                 withSonarQubeEnv('sonarqube') {
-                bat "${scannerHome}/bin/sonar-scanner"
+                    bat "${scannerHome}/bin/sonar-scanner"
                 }
             }
         }
-        stage("Deploy") {
+        stage('Deploy') {
             environment {
                 DOCKER_PASS = credentials("docker_token")
             }
             steps {
-                bat 'docker build -t huyfst/auth .'
+                bat 'docker build -t huyfst/order .'
                 bat 'docker login -u huyfst -p %DOCKER_PASS%'
-                bat 'docker push huyfst/auth'
-                bat 'trivy image huyfst/auth'
+                bat 'docker push huyfst/order'
+                bat 'trivy image huyfst/order'
             }
         }
-
     }
 }
+

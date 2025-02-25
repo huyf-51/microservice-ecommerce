@@ -1,0 +1,32 @@
+pipeline{
+    agent any
+
+    stages{
+        stage("Test") {
+            steps {
+                bat "go test"
+            }
+        }
+        // stage('Sonar scan') {
+            // environment {
+            //     scannerHome = tool 'sonarscan'
+            // }
+            // steps {
+            //     withSonarQubeEnv('sonarqube') {
+            //         bat "${scannerHome}/bin/sonar-scanner"
+            //     }
+            // }
+        // }
+        stage("Deploy") {
+            environment {
+                DOCKER_PASS = credentials("docker_token")
+            }
+            steps {
+                bat 'docker build -t huyfst/cart .'
+                bat 'docker login -u huyfst -p %DOCKER_PASS%'
+                bat 'docker push huyfst/cart'
+                bat 'trivy image huyfst/cart'
+            }
+        }
+    }
+}
