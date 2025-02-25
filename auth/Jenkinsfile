@@ -14,8 +14,10 @@ pipeline{
                 scannerHome = tool 'sonarscan'
             }
             steps {
-                withSonarQubeEnv('sonarqube') {
-                    bat "${scannerHome}/bin/sonar-scanner"
+                dir('auth') {
+                    withSonarQubeEnv('sonarqube') {
+                        bat "${scannerHome}/bin/sonar-scanner"
+                    }
                 }
             }
         }
