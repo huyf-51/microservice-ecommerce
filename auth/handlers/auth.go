@@ -53,6 +53,7 @@ func Login(c *gin.Context) {
 			return
 		}
 	}
+
 	pkpem, _ := os.ReadFile("./key/private-key.pem")
 	pk, _ := jwt.ParseECPrivateKeyFromPEM(pkpem)
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.StandardClaims{ExpiresAt: time.Now().Unix() + 15000})
