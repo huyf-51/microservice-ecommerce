@@ -4,7 +4,7 @@ pipeline{
     stages{
         stage("Test") {
             steps {
-                bat "go test"
+                bat "go test ./tests"
             }
         }
         // stage('Sonar scan') {
