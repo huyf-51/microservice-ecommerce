@@ -4,7 +4,9 @@ pipeline{
     stages {
         stage("Test") {
             steps {
-                bat "go test"
+                dir('auth') {
+                    bat "go test"
+                }
             }
         }
         stage('Sonar scan') {
@@ -12,8 +14,10 @@ pipeline{
                 scannerHome = tool 'sonarscan'
             }
             steps {
-                withSonarQubeEnv('sonarqube') {
-                bat "${scannerHome}/bin/sonar-scanner"
+                dir('auth') {
+                    withSonarQubeEnv('sonarqube') {
+                    bat "${scannerHome}/bin/sonar-scanner"
+                    }
                 }
             }
         }
@@ -22,12 +26,13 @@ pipeline{
                 DOCKER_PASS = credentials("docker_token")
             }
             steps {
-                bat 'docker build -t huyfst/auth .'
-                bat 'docker login -u huyfst -p %DOCKER_PASS%'
-                bat 'docker push huyfst/auth'
-                bat 'trivy image huyfst/auth'
+                dir('auth') {
+                    bat 'docker build -t huyfst/auth .'
+                    bat 'docker login -u huyfst -p %DOCKER_PASS%'
+                    bat 'docker push huyfst/auth'
+                    bat 'trivy image huyfst/auth'
+                }
             }
         }
-
     }
 }
