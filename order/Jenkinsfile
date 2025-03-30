@@ -4,8 +4,10 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                bat 'npm install jest'
-                bat 'npm run test'
+                dir('order') {
+                    bat 'npm install jest'
+                    bat 'npm run test'
+                }
             }
         }
         stage('Sonar scan') {
@@ -13,8 +15,10 @@ pipeline {
                 scannerHome = tool 'sonarscan'
             }
             steps {
-                withSonarQubeEnv('sonarqube') {
-                    bat "${scannerHome}/bin/sonar-scanner"
+                dir('order') {
+                    withSonarQubeEnv('sonarqube') {
+                        bat "${scannerHome}/bin/sonar-scanner"
+                    }
                 }
             }
         }
@@ -23,10 +27,12 @@ pipeline {
                 DOCKER_PASS = credentials("docker_token")
             }
             steps {
-                bat 'docker build -t huyfst/order .'
-                bat 'docker login -u huyfst -p %DOCKER_PASS%'
-                bat 'docker push huyfst/order'
-                bat 'trivy image huyfst/order'
+                dir('order') {
+                    bat 'docker build -t huyfst/order .'
+                    bat 'docker login -u huyfst -p %DOCKER_PASS%'
+                    bat 'docker push huyfst/order'
+                    bat 'trivy image huyfst/order'
+                }
             }
         }
     }

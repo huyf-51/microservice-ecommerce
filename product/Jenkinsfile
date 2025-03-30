@@ -4,29 +4,35 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                bat 'npm install jest'
-                bat 'npm run test'
+                dir('product') {
+                    bat 'npm install jest'
+                    bat 'npm run test'  
+                }
             }
         }
-        // stage('Sonar scan') {
-            // environment {
-            //     scannerHome = tool 'sonarscan'
-            // }
-            // steps {
-            //     withSonarQubeEnv('sonarqube') {
-            //         bat "${scannerHome}/bin/sonar-scanner"
-            //     }
-            // }
-        // }
+        stage('Sonar scan') {
+            environment {
+                scannerHome = tool 'sonarscan'
+            }
+            steps {
+                dir('product') {
+                    withSonarQubeEnv('sonarqube') {
+                        bat "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
+            }
+        }
         stage('Deploy') {
             environment {
                 DOCKER_PASS = credentials("docker_token")
             }
             steps {
-                bat 'docker build -t huyfst/product .'
-                bat 'docker login -u huyfst -p %DOCKER_PASS%'
-                bat 'docker push huyfst/product'
-                bat 'trivy image huyfst/product'
+                dir('product') {
+                    bat 'docker build -t huyfst/product .'
+                    bat 'docker login -u huyfst -p %DOCKER_PASS%'
+                    bat 'docker push huyfst/product'
+                    bat 'trivy image huyfst/product'
+                }
             }
         }
     }

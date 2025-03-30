@@ -228,6 +228,19 @@ services:
             retries: 5
         secrets:
             - db_pass
+    
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: pgadmin
+        networks: 
+            - microservice
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@example.com
+            PGADMIN_DEFAULT_PASSWORD: admin123
+        ports:
+            - target: 80
+              protocol: tcp
+              published: 5000
 
 networks:
     microservice:
