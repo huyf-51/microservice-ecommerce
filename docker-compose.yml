@@ -16,19 +16,19 @@ services:
             - target: 3000
               protocol: tcp
               published: 3000
-        environment: 
+        environment:
             PUB_KEY_FILE: /run/secrets/pub_key
         secrets:
             - pub_key
-        
+
     auth:
         image: huyfst/auth
-        deploy: 
+        deploy:
             mode: replicated
             replicas: 3
         networks:
             - microservice
-        depends_on: 
+        depends_on:
             auth-db:
                 condition: service_healthy
         environment:
@@ -45,25 +45,25 @@ services:
         volumes:
             - type: volume
               source: auth-db-data
-              target: /data
+              target: /var/lib/postgresql/data
         environment:
             POSTGRES_PASSWORD_FILE: /run/secrets/db_pass
             POSTGRES_USER: huyfst
             POSTGRES_DB: auth
         healthcheck:
-            test: ["CMD", "pg_isready", "-U", "huyfst", "-d", "auth"]
+            test: ['CMD', 'pg_isready', '-U', 'huyfst', '-d', 'auth']
             interval: 5s
             timeout: 3s
             retries: 5
         secrets:
             - db_pass
-            
+
     cart:
         image: huyfst/cart
-        deploy: 
+        deploy:
             mode: replicated
             replicas: 3
-        depends_on: 
+        depends_on:
             cart-db:
                 condition: service_healthy
             cart-redis:
@@ -85,13 +85,13 @@ services:
         volumes:
             - type: volume
               source: cart-db-data
-              target: /data
+              target: /var/lib/postgresql/data
         environment:
             POSTGRES_PASSWORD_FILE: /run/secrets/db_pass
             POSTGRES_USER: huyfst
             POSTGRES_DB: cart
         healthcheck:
-            test: ["CMD", "pg_isready", "-U", "huyfst", "-d", "cart"]
+            test: ['CMD', 'pg_isready', '-U', 'huyfst', '-d', 'cart']
             interval: 5s
             timeout: 3s
             retries: 5
@@ -104,17 +104,17 @@ services:
         networks:
             - microservice
         healthcheck:
-            test: ["CMD", "redis-cli", "PING"]
+            test: ['CMD', 'redis-cli', 'PING']
             interval: 5s
             timeout: 3s
             retries: 5
 
     order:
         image: huyfst/order
-        deploy: 
+        deploy:
             mode: replicated
             replicas: 3
-        depends_on: 
+        depends_on:
             order-db:
                 condition: service_healthy
         networks:
@@ -138,13 +138,13 @@ services:
         volumes:
             - type: volume
               source: order-db-data
-              target: /data
+              target: /var/lib/postgresql/data
         environment:
             POSTGRES_PASSWORD_FILE: /run/secrets/db_pass
             POSTGRES_USER: huyfst
             POSTGRES_DB: order
         healthcheck:
-            test: ["CMD", "pg_isready", "-U", "huyfst", "-d", "order"]
+            test: ['CMD', 'pg_isready', '-U', 'huyfst', '-d', 'order']
             interval: 5s
             timeout: 3s
             retries: 5
@@ -153,10 +153,10 @@ services:
 
     payment:
         image: huyfst/payment
-        deploy: 
+        deploy:
             mode: replicated
             replicas: 3
-        depends_on: 
+        depends_on:
             payment-db:
                 condition: service_healthy
         networks:
@@ -175,13 +175,13 @@ services:
         volumes:
             - type: volume
               source: payment-db-data
-              target: /data
+              target: /var/lib/postgresql/data
         environment:
             POSTGRES_PASSWORD_FILE: /run/secrets/db_pass
             POSTGRES_USER: huyfst
             POSTGRES_DB: payment
         healthcheck:
-            test: ["CMD", "pg_isready", "-U", "huyfst", "-d", "payment"]
+            test: ['CMD', 'pg_isready', '-U', 'huyfst', '-d', 'payment']
             interval: 5s
             timeout: 3s
             retries: 5
@@ -190,10 +190,10 @@ services:
 
     product:
         image: huyfst/product
-        deploy: 
+        deploy:
             mode: replicated
             replicas: 3
-        depends_on: 
+        depends_on:
             product-db:
                 condition: service_healthy
         networks:
@@ -204,7 +204,7 @@ services:
             DB_USER: huyfst
             DB_PASS_FILE: /run/secrets/product_db_pass
             DB_HOST: product-db
-        secrets: 
+        secrets:
             - product_db_pass
 
     product-db:
@@ -216,23 +216,23 @@ services:
         volumes:
             - type: volume
               source: product-db-data
-              target: /data
+              target: /var/lib/postgresql/data
         environment:
             POSTGRES_PASSWORD_FILE: /run/secrets/db_pass
             POSTGRES_USER: huyfst
             POSTGRES_DB: product
         healthcheck:
-            test: ["CMD", "pg_isready", "-U", "huyfst", "-d", "product"]
+            test: ['CMD', 'pg_isready', '-U', 'huyfst', '-d', 'product']
             interval: 5s
             timeout: 3s
             retries: 5
         secrets:
             - db_pass
-    
+
     pgadmin:
         image: dpage/pgadmin4
         container_name: pgadmin
-        networks: 
+        networks:
             - microservice
         environment:
             PGADMIN_DEFAULT_EMAIL: admin@example.com
@@ -273,4 +273,3 @@ secrets:
         file: ./payment-dsn.txt
     pub_key:
         file: ./api-gateway/pub-key.pem
-    
