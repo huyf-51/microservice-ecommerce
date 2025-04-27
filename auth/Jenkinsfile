@@ -4,34 +4,34 @@ pipeline{
     stages {
         stage("Test") {
             steps {
-                dir('auth') {
+                // dir('auth') {
                     bat "go test ./tests"
-                }
+                // }
             }
         }
-        stage('Sonar scan') {
-            environment {
-                scannerHome = tool 'sonarscan'
-            }
-            steps {
-                dir('auth') {
-                    withSonarQubeEnv('sonarqube') {
-                        bat "${scannerHome}/bin/sonar-scanner"
-                    }
-                }
-            }
-        }
+        // stage('Sonar scan') {
+        //     environment {
+        //         scannerHome = tool 'sonarscan'
+        //     }
+        //     steps {
+        //         // dir('auth') {
+        //             withSonarQubeEnv('sonarqube') {
+        //                 bat "${scannerHome}/bin/sonar-scanner"
+        //             }
+        //         // }
+        //     }
+        // }
         stage("Deploy") {
             environment {
                 DOCKER_PASS = credentials("docker_token")
             }
             steps {
-                dir('auth') {
+                // dir('auth') {
                     bat 'docker build -t huyfst/auth .'
                     bat 'docker login -u huyfst -p %DOCKER_PASS%'
                     bat 'docker push huyfst/auth'
                     bat 'trivy image huyfst/auth'
-                }
+                // }
             }
         }
     }
